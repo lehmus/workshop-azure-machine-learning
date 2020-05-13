@@ -1,9 +1,8 @@
-name: project_environment
+name: advanced-mlops-workshop-env
 dependencies:
 - python=3.6.2
+- pip
 - pytorch
-- torchvision==0.5.0
-- torchtext==0.5.0
 - pip:
   - numpy==1.15.4
   - pandas==0.23.4
@@ -11,6 +10,8 @@ dependencies:
   - scipy==1.0.0
   - matplotlib==3.0.2
   - utils==0.9.0
+  - torchvision==0.5.0
+  - torchtext==0.5.0
   # Required packages for AzureML execution, history, and data preparation.
   - azureml-sdk==1.0.85
   - azureml-defaults==1.0.85
