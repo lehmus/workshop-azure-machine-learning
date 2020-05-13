@@ -1,25 +1,21 @@
-import os
 from azureml.core import Workspace
 from azureml.core.authentication import AzureCliAuthentication
+import os
 
-# Create the workspace using the specified parameters
+
+# Create the workspace by supplying the specified parameters
 ws = Workspace.create(
-    name='azuremlworkshopws',
-    subscription_id='e0eeddf8-2d02-4a01-9786-92bb0e0cb692',
-    resource_group='azuremlworkshoprgp',
-    location='westeurope',
+    name='<WORKSPACE_NAME>',
+    subscription_id='<SUBSCRIPTION_ID>',
+    resource_group='<RESOURCE_GROUP_NAME>',
+    location='<WORKSPACE_LOCATION>',
     create_resource_group=True,
     sku='basic',
     exist_ok=True,
     auth=AzureCliAuthentication()
 )
-
 print(ws.get_details())
 
-# write the details of the workspace to a configuration file in the project root
-ws.write_config(
-    path=os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        '../'
-    )
-)
+# Write the details of the workspace to a configuration file in the project root
+project_root = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
+ws.write_config(path=project_root)
