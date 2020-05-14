@@ -29,6 +29,12 @@ class OurNet(torch.nn.Module):
         return out
 
 
+class NewsgroupData:
+    def __init__(self, data=[], target=[]):
+        self.data = data
+        self.target = target
+
+
 def get_arguments(args, arg_defs):
     '''
     Read and parse program arguments.
@@ -144,14 +150,6 @@ def main(argv):
     }
     args = get_arguments(argv, program_args)
 
-    # Define categories to extract from the 20newsgroup data from sklearn
-    categories = [
-        'alt.atheism',
-        'talk.religion.misc',
-        'comp.graphics',
-        'sci.space',
-    ]
-
     # Set up logging
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     log_level = getattr(logging, args.log_level, None)
@@ -161,12 +159,19 @@ def main(argv):
     run = Run.get_context()
 
     # Load the data from sklearn 20newsgroups
-    data_train = fetch_20newsgroups(
-        subset='train', categories=categories, shuffle=True, random_state=42
-    )
-    data_test = fetch_20newsgroups(
-        subset='test', categories=categories, shuffle=True, random_state=42
-    )
+
+    # define datasets
+    data_train = NewsgroupData()
+    data_test = NewsgroupData()
+    # read dataset from AML
+    dataset_train = run.input_datasets['subset_train'].to_pandas_dataframe()
+    dataset_test = run.input_datasets['subset_test'].to_pandas_dataframe()
+    # convert to numpy df
+    data_train.data = dataset_train.text.values
+    data_test.data = dataset_test.text.values
+    # convert label to int
+    data_train.target = [int(value or 0) for value in dataset_train.target.values]
+    data_test.target = [int(value or 0) for value in dataset_test.target.values]
 
     vocab = Counter()
     for text in data_train.data:

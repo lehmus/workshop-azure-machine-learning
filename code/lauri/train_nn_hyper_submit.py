@@ -3,7 +3,7 @@ Training submitter for PyTorch neural network with HyperDrive hyperparameter tun
 '''
 
 import argparse
-from azureml.core import Workspace, Experiment
+from azureml.core import Workspace, Experiment, Dataset
 from azureml.core.authentication import AzureCliAuthentication
 from azureml.core.runconfig import MpiConfiguration
 from azureml.train.dnn import PyTorch
@@ -85,8 +85,15 @@ def main(argv):
     # PyTorch library version
     pytorch_version = '1.4'
 
-    # Load Azure ML workspace
+    # Check if GPU computing is available
+    is_gpucluster = ('gpu' in args.cluster_name)
+
+    # Load Azure ML Workspace
     workspace = Workspace.from_config(auth=AzureCliAuthentication())
+
+    # Load Azure ML Datasets
+    dataset_train = Dataset.get_by_name(workspace, name='newsgroups_subset_train')
+    dataset_test = Dataset.get_by_name(workspace, name='newsgroups_subset_test')
 
     # Define Run Configuration
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -101,8 +108,12 @@ def main(argv):
         compute_target=args.cluster_name,
         distributed_training=MpiConfiguration(),
         framework_version=pytorch_version,
-        use_gpu=False,
-        conda_dependencies_file=dep_path
+        use_gpu=is_gpucluster,
+        conda_dependencies_file=dep_path,
+        inputs=[
+            dataset_train.as_named_input('subset_train'),
+            dataset_test.as_named_input('subset_test')
+        ]
     )
 
     # Set parameters for search
