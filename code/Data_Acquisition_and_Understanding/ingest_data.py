@@ -1,9 +1,17 @@
-# Pre-processes SKLearn sample data
-# Ingest the data into an Azure ML Datastore for training
-import pandas as pd
-import time
+'''
+Pre-processes SKLearn sample data
+Ingest the data into an Azure ML Datastore for training
+'''
+
+from azureml.core import Workspace, Datastore
+from azureml.core.authentication import AzureCliAuthentication
 import os
+import pandas as pd
 from sklearn.datasets import fetch_20newsgroups
+import time
+
+
+datastore_name = 'workspaceblobstore' # default workspace storage
 
 # Define newsgroup categories to be downloaded to generate sample dataset
 categories = [
@@ -71,3 +79,14 @@ for data_split in ['train', 'test']:
         encoding="utf-8",
         line_terminator='\n'
     )
+
+# Create Azure ML Dataset
+workspace = Workspace.from_config(auth=AzureCliAuthentication())
+datastore = Datastore.get(workspace, datastore_name)
+# upload files
+datastore.upload(
+    src_dir=os.path.join(curr_dir, 'tmp'),
+    target_path=None,
+    overwrite=True,
+    show_progress=True
+)
