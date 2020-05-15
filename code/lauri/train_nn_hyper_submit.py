@@ -44,7 +44,10 @@ def main(argv):
             'short_flag': 's',
             'type': str,
             'default_value': 'train.py',
-            'description': 'Script file path on the host system.'
+            'description': (
+                'Script file path on the host system'
+                ' (relative to the parent script directory).'
+            )
         },
         'cluster_name': {
             'short_flag': 'c',

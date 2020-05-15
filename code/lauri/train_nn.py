@@ -118,7 +118,7 @@ def main(argv):
             'description': 'Output model file path.'
         },
         'hidden_size': {
-            'short_flag': 'h',
+            'short_flag': 's',
             'type': int,
             'default_value': 100,
             'description': 'Number of nodes in the hidden layer'
@@ -135,7 +135,7 @@ def main(argv):
             'default_value': 200,
             'description': 'Batch size'
         },
-        'num_epochs"': {
+        'num_epochs': {
             'short_flag': 'e',
             'type': int,
             'default_value': 20,
