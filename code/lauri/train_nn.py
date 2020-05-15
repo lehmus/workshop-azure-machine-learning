@@ -164,8 +164,8 @@ def main(argv):
     data_train = NewsgroupData()
     data_test = NewsgroupData()
     # read dataset from AML
-    dataset_train = run.input_datasets['subset_train'].to_pandas_dataframe()
-    dataset_test = run.input_datasets['subset_test'].to_pandas_dataframe()
+    dataset_train = run.input_datasets['train'].to_pandas_dataframe()
+    dataset_test = run.input_datasets['test'].to_pandas_dataframe()
     # convert to numpy df
     data_train.data = dataset_train.text.values
     data_test.data = dataset_test.text.values

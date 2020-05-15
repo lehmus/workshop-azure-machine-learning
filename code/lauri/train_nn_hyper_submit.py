@@ -12,6 +12,7 @@ from azureml.train.hyperdrive import (
     BayesianParameterSampling, HyperDriveConfig, PrimaryMetricGoal
 )
 from azureml.train.hyperdrive.parameter_expressions import uniform, choice
+import logging
 import os
 import sys
 
@@ -80,13 +81,18 @@ def main(argv):
             'short_flag': 'l',
             'type': str,
             'default_value': 'warning',
-            'description': 'Logging output level.'
+            'description': 'Logging output level. Possible values: error, warning, info, debug.'
         }
     }
     args = get_arguments(argv, program_args)
 
     # PyTorch library version
     pytorch_version = '1.4'
+
+    # Set up logging
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    log_level = getattr(logging, args.log_level, None)
+    logging.basicConfig(level=log_level, format=log_format)
 
     # Check if GPU computing is available
     is_gpucluster = ('gpu' in args.cluster_name)
@@ -114,8 +120,8 @@ def main(argv):
         use_gpu=is_gpucluster,
         conda_dependencies_file=dep_path,
         inputs=[
-            dataset_train.as_named_input('subset_train'),
-            dataset_test.as_named_input('subset_test')
+            dataset_train.as_named_input('train'),
+            dataset_test.as_named_input('test')
         ]
     )
 
@@ -142,6 +148,7 @@ def main(argv):
     experiment = Experiment(workspace, args.experiment_name)
 
     # Submit the experiment
+    logging.info('Submitting training job to cluster ' + args.cluster_name + '\'')
     run = experiment.submit(run_config)
     run.wait_for_completion(show_output=True)
 
